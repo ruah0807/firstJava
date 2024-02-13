@@ -1,0 +1,10 @@
+package Ch11.제네릭;
+
+public class GenericMethodMain3 {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

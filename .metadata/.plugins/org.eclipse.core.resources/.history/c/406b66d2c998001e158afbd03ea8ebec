@@ -1,0 +1,11 @@
+package Ch11.제네릭;
+
+import Ch07.Phone;
+
+public class GenericMethodMain3 {
+
+	public static void main(String[] args) {
+		ShowInteger showInteger = new ShowInteger();
+		MyClass<Phone> my = new MyClass<Phone>();
+		my.val
+}

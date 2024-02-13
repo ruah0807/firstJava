@@ -1,0 +1,217 @@
+package Ch01;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Scanner;
+
+
+public class Database {
+
+	Connection con = null;
+	Statement st = null;
+	static String url ="jdbc:mysql://localhost:3306/madang?&serverTimezone=Asia/Seoul";
+	static String user = "madang";
+	static String passwd = "madang";
+	String tableName = null;
+	
+//	url="jdbc:mysql://localhost:3306/madang?&serverTimezone=Asia/Seoul"; 
+//                                   database명
+//	user = "madang";
+//	passwd = "madang";
+
+	
+	
+	
+	public static void main(String[]args) {
+		
+		Database db = new Database();
+		
+		try {
+			
+			Class.forName("com.mysql.cj.jdbc.Driver"); 
+			db.con = DriverManager.getConnection(url, user, passwd);
+			System.out.println("데이터베이스 접속 성공");
+			db.st = db.con.createStatement();
+			
+			while(true){
+				
+			
+			System.out.println("[1] 테이블 생성");
+			System.out.println("[2] 고객 명단 추가");
+			System.out.println("[3] 고객 명단 삭제");
+			System.out.println("[4] 고객 정보 변경");
+			System.out.println("[5] 테이블 조회");
+			
+			System.out.print(" 위 메뉴에서 번호를 선택하시오 >> ");
+			
+			Scanner sc = new Scanner(System.in);
+			int num = sc.nextInt();
+			
+			
+			switch (num) {
+					case 1 : 
+						db.create();
+						break;
+					case 2 :
+						db.insertCustomer();
+						break;
+					case 3 :
+						db.deleteCustomer();
+						break;
+					case 4 :
+						db.updateCustomer();
+						break;				
+					case 5 :
+						db.select();
+						break;
+			
+					}
+			}
+			
+			}catch(Exception e) {
+				System.out.println(e);
+			}
+		
+	}
+
+	
+	
+			
+	void create() {
+		try {		
+		Scanner sc = new Scanner(System.in);
+		
+		System.out.print("테이블 이름을 입력하세요 >> ");
+		tableName = sc.nextLine();
+		
+		
+		String query= "create table "+ tableName+ "( custid int not null primary key,"
+		+" custname varchar(20), phone varchar(40), address varchar(40));";
+
+		st.execute(query);	
+		System.out.println("테이블 만들기 성공 !");
+	}catch(Exception e){
+		System.out.println("테이블 생성 실패 >> "+e.toString());
+	}
+	}
+	
+	
+			
+	void insertCustomer() {
+				
+		Scanner sc = new Scanner(System.in);
+		System.out.print("테이블명을 입력하세요 >> ");
+		tableName = sc.nextLine();
+	
+		System.out.print("추가할 고객 번호를 입력하세요 >> ");
+		int custid = sc.nextInt();
+		sc.nextLine();
+		
+		System.out.print("고객 이름을 입력하세요 >> ");
+		String custname = sc.nextLine();
+		
+		
+		System.out.print("전화번호를 입력하세요 >> ");
+		String phone = sc.nextLine();
+		
+		System.out.print("고객 주소를 이름을 입력하세요 >> ");
+		String address = sc.nextLine();
+				
+		String query= "insert into "+ tableName + " values ( "+custid+", '"+custname+"', '"+phone+"', '"+address+"');";
+	
+		try {
+		st.executeUpdate(query);
+		System.out.println("고객 명단 추가 성공");
+		}catch(Exception e){
+			System.out.println("고객명단 추가 실패 >> " + e.toString());
+		}	
+	
+	}
+	
+	
+	
+	void deleteCustomer() {
+		
+		Scanner sc = new Scanner(System.in);
+		System.out.print("테이블 이름을 입력하세요 >> ");
+		tableName = sc.nextLine();
+		System.out.print("고객의 고유 ID를 입력하세요 >>");
+		int custid = sc.nextInt();
+		
+		String query= "delete from "+ tableName+" where bookid ='"+custid+"';";
+		
+		try {
+			st.executeUpdate(query);	
+
+			System.out.println("고객 명단을 삭제 성공 !");
+			}catch(Exception e){
+				
+				System.out.println("고객명단 삭제 실패 >> "+e.toString());
+			}	
+		
+	}
+	
+	
+	
+	void updateCustomer() {
+		
+		Scanner sc = new Scanner(System.in);
+		
+		System.out.print("테이블 이름을 입력하세요 >> ");
+		tableName = sc.nextLine();
+		
+		System.out.print("업데이트 할 고객의 데이터목록을 입력하세요 >> ");
+		String field = sc.nextLine();
+		
+		System.out.print("업데이트 할 세팅값을 입력하세요 >> ");
+		String setting = sc.nextLine();
+		
+		System.out.print("업데이트 할 고객의 ID를 입력하세요 >> ");
+		int custid = sc.nextInt();
+		
+		String query= "update "+ tableName+" set "+field+"='"+setting+"'" + " where custid ="+custid+";" ;
+		
+		try {
+			st.executeUpdate(query);
+
+			System.out.println("고개 정보 수정에 성공");
+			}catch(Exception e){
+				System.out.println("고객 정보 수정 불가능 >> "+e.toString());
+			}	
+		
+	}
+	
+	
+	
+	void select() {
+		
+		Scanner sc = new Scanner(System.in);
+		System.out.print("테이블 이름을 입력하세요 >> ");
+		tableName = sc.nextLine();
+		
+		String query= "select * from "+tableName+";";
+
+		try {
+			System.out.println("=================  고  객  정  보  =================");
+			System.out.println("| custid | custname |    phone    |    address   |");
+			System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+		ResultSet result= st.executeQuery(query);	
+		
+		while(result.next()) {
+			System.out.print("   "+result.getString("custid") + "\t   " + result.getString("custname")
+			 + "\t     " + result.getString("phone") + "   " + result.getString("address") +"\n");
+		}
+		System.out.println("고객 명단을 조회 성공 !");
+		}catch(Exception e){
+		System.out.println("고객명단 조회 실패 >>"+e.toString());
+		
+		}
+		
+	}
+	
+	
+}
+	
+
